@@ -4,7 +4,7 @@ import os, keras
 from keras.models import Model
 
 
-def VisualizeCoordinate(arrayOutputs, arrayLabels, epoch, strOutputFolderPath):
+def VisualizeCoordinate(arrayOutputs, arrayLabels, epoch, folatLambda, strOutputFolderPath):
 
     listColor = ["#ff0000", "#ffff00", "#00ff00", "#00ffff", "#0000ff",
                  "#ff00ff", "#990000", "#999900", "#009900", "#009999"]
@@ -19,17 +19,19 @@ def VisualizeCoordinate(arrayOutputs, arrayLabels, epoch, strOutputFolderPath):
 
     plt.xlim(xmin=XMin, xmax=XMax)
     plt.ylim(ymin=YMin, ymax=YMax)
-    plt.text(XMin, YMax, "epoch={}".format(epoch))
-    plt.savefig(os.path.join(strOutputFolderPath, "epoch={}.jpg").format(epoch))
+    plt.text(XMin, YMax, "lambda={} epoch={}".format(folatLambda, epoch))
+    plt.savefig(os.path.join(strOutputFolderPath, "lambda={}epoch={}.jpg").format(folatLambda, epoch))
 
 
 class Records(keras.callbacks.Callback):
-	def __init__(self, boolCenterLoss, strOutputFolderPath):
+	def __init__(self, boolCenterLoss, folatLambda, strOutputFolderPath):
 		self.boolCenterLoss = boolCenterLoss
 		if self.boolCenterLoss:
-			self.strOutputFolderPath = os.path.join(strOutputFolderPath, "IsCenter")
+			self.strSaveFolderPath = os.path.join(strOutputFolderPath, "IsCenter")
+			self.folatLambda = folatLambda
 		else:
-			self.strOutputFolderPath = os.path.join(strOutputFolderPath, "NonCenter")
+			self.strSaveFolderPath = os.path.join(strOutputFolderPath, "NonCenter")
+			self.folatLambda = 0
 
 	def on_train_begin(self, logs={}):
 		self.losses = []
@@ -66,7 +68,7 @@ class Records(keras.callbacks.Callback):
 		VisualLayerModel = Model(inputs=inputs, outputs=self.model.get_layer("VisualLayer").output)
 		arrayOutputs = VisualLayerModel.predict(self.validation_data[0])
 		
-		VisualizeCoordinate(arrayOutputs, arrayLabels, epoch, self.strOutputFolderPath)
+		VisualizeCoordinate(arrayOutputs, arrayLabels, epoch, self.folatLambda, self.strSaveFolderPath)
 		return
 
 	def on_batch_begin(self, batch, logs={}):
@@ -95,4 +97,4 @@ class Records(keras.callbacks.Callback):
 		plt.legend()
 		plt.title("accuracy process")
 		plt.tight_layout()
-		plt.savefig(os.path.join(self.strOutputFolderPath, "LossAccuracyCurves"))
+		plt.savefig(os.path.join(self.strSaveFolderPath, "LossAccuracyCurvesLambda={}.jpg").format(self.folatLambda))

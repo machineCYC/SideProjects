@@ -5,7 +5,6 @@ from keras.datasets import mnist
 from keras import backend as K
 from keras.models import Model
 from Base import Utility, Train, Model
-# https://github.com/shamangary/Keras-MNIST-center-loss-with-visualization
 
 
 strPtojectFolderPath = os.path.dirname(__file__)
@@ -28,7 +27,7 @@ dictModelPara["intKernelSize2"] = (3, 3)
 dictModelPara["intHiddenSize"] = 2
 dictModelPara["intClassesNum"] = 10
 dictModelPara["boolCenterLoss"] = True
-
+dictModelPara["floatLambda"] = 0.5
 
 (arrayTrainX, arrayTrainY), (arrayValidX, arrayValidY) = mnist.load_data()
 

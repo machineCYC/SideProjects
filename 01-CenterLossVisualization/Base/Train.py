@@ -9,7 +9,7 @@ strOutputFolderPath = os.path.join(strProjectFolderPath, "Output")
 
 def getTrain(dictModelPara, dictHyperPara, arrayTrain, arrayValid):
 
-    history = Utility.Records(boolCenterLoss=dictModelPara["boolCenterLoss"], strOutputFolderPath=strOutputFolderPath)
+    history = Utility.Records(boolCenterLoss=dictModelPara["boolCenterLoss"], folatLambda=dictModelPara["floatLambda"], strOutputFolderPath=strOutputFolderPath)
 
     model = Model.CNN(dictModelPara)
 
@@ -18,8 +18,8 @@ def getTrain(dictModelPara, dictHyperPara, arrayTrain, arrayValid):
     else:
         strSavePath = os.path.join(os.path.join(strOutputFolderPath, "NonCenter"))
 
-    callbacks = [ModelCheckpoint(os.path.join(strSavePath, "model.h5"), save_best_only=True)
-                , CSVLogger(os.path.join(strSavePath, "log.csv"), separator=",", append=False)
+    callbacks = [ModelCheckpoint(os.path.join(strSavePath, "modelLambda{}.h5").format(dictModelPara["floatLambda"]), save_best_only=True)
+                , CSVLogger(os.path.join(strSavePath, "logLambda{}.csv").format(dictModelPara["floatLambda"]), separator=",", append=False)
                 , history]
 
     if dictModelPara["boolCenterLoss"]:
@@ -31,4 +31,3 @@ def getTrain(dictModelPara, dictHyperPara, arrayTrain, arrayValid):
         model.fit(x=arrayTrain[0], y=arrayTrain[1], epochs=dictHyperPara["intEpochs"], batch_size=dictHyperPara["intBatchSize"], verbose=2, validation_data=arrayValid, callbacks=callbacks)
 
     history.plotLosss()
-    model.save(os.path.join(strSavePath, "model.h5"))
