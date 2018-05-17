@@ -2,11 +2,9 @@
 
 ## Purpose: Observe the cluster influenced by center loss
 
-一般做分類時是使用 Softmax + Crossentropy 來訓練模型的參數，但在某些情況下我們更關心透過 NN 是否能提取出好的 feature。可惜的是直接利用 Softmax + Crossentropy 來訓練模型所得到的 feature 並不一定會有 cluster 的效果。
+一般做多類別分類時都會使用 Softmax 當作輸出，Crossentropy 當作 loss function 來訓練模型的參數。這種做法有個缺點就是分類會太過自信，另外某些情況下我們更關心透過 NN 是否能提取出好的 feature。可惜的是直接利用 Softmax + Crossentropy 來訓練模型所得到的 feature 並不一定會有 cluster 的效果。
 
-仔細想想利用 Softmax + Crossentropy 來訓練模型只可以將每筆資料盡量歸到他所屬的類別，但卻不能使不同類別間的距離擴大，因此解由此方式訓練模型並不一定會得到 cluster 效果的 feature。
-
-然而對 loss function 增加 center loss 的概念可以使每筆資料盡量歸到他所屬的類別並且擴大不同類別之間的距離，進而影響模型提取出具有 cluster 效果的 feature。
+所以希望藉由這次的實驗，可以利用 Softmax + Crossentropy + center loss 的方式來訓練模型參數，解決 Softmax 過度自信，並透過增加 center loss 的概念提取具有cluster 特性的 feature。
 
 ## Data 簡介
 
@@ -20,11 +18,22 @@ MNIST datasets 包含從零到九的手繪數字的灰度圖像。
 
 ## Summary
 
+在使用 Softmax 當作輸出層數學式為 Softmax(Wx + b)，我們可以理解 x 為資料經過 NN 所提取出來的 feature，而這個 feature 會有什麼特性呢?
+
+仔細想想利用 Softmax + Crossentropy 來訓練模型只可以將每筆資料盡量歸到他所屬的類別，但卻不能使不同類別間的距離擴大，造成這種結果的主要原因是因為 exp 函數會使得數值大者恆大小者恆小，以至於最大的值機率會很接近1。因此解由此方式訓練模型並不一定會得到 cluster 效果的 feature。loss function 數學式如下，
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=-\sum_{i=1}^{m}log\frac{e^{W_{y}^{T}x&plus;b_{y}}}{\sum_{j=1}^{n}e^{W_{j}^{T}x&plus;b_{j}}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?-\sum_{i=1}^{m}log\frac{e^{W_{y}^{T}x&plus;b_{y}}}{\sum_{j=1}^{n}e^{W_{j}^{T}x&plus;b_{j}}}" title="-\sum_{i=1}^{m}log\frac{e^{W_{y}^{T}x+b_{y}}}{\sum_{j=1}^{n}e^{W_{j}^{T}x+b_{j}}}" /></a>
+
+然而對 loss function 增加 center loss 的概念可以使每筆資料盡量歸到他所屬的類別並且擴大不同類別之間的距離，進而影響模型提取出具有 cluster 效果的 feature。loss function 數學式如下，
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=-\sum_{i=1}^{m}log\frac{e^{W_{y}^{T}x&plus;b_{y}}}{\sum_{j=1}^{n}e^{W_{j}^{T}x&plus;b_{j}}}&plus;\lambda&space;\left&space;\|&space;x-c_{y}&space;\right&space;\|" target="_blank"><img src="https://latex.codecogs.com/gif.latex?-\sum_{i=1}^{m}log\frac{e^{W_{y}^{T}x&plus;b_{y}}}{\sum_{j=1}^{n}e^{W_{j}^{T}x&plus;b_{j}}}&plus;\lambda&space;\left&space;\|&space;x-c_{y}&space;\right&space;\|" title="-\sum_{i=1}^{m}log\frac{e^{W_{y}^{T}x+b_{y}}}{\sum_{j=1}^{n}e^{W_{j}^{T}x+b_{j}}}+\lambda \left \| x-c_{y} \right \|" /></a>
+
+
 <div class="half">
-    <img src="Output/NonCenter/epoch=0.jpg" height="300px">
-    <img src="Output/IsCenter/epoch=0.jpg" height="300px">
-    <img src="Output/NonCenter/epoch=29.jpg" height="300px">
-    <img src="Output/IsCenter/epoch=29.jpg" height="300px">
+    <img src="Output/NonCenter/lambda=0epoch=0.jpg" height="300px">
+    <img src="Output/IsCenter/lambda=0.5epoch=0.jpg" height="300px">
+    <img src="Output/NonCenter/lambda=0epoch=29.jpg" height="300px">
+    <img src="Output/IsCenter/lambda=0.5epoch=29.jpg" height="300px">
 </div>
 
 
@@ -34,22 +43,27 @@ MNIST datasets 包含從零到九的手繪數字的灰度圖像。
 01-CenterLossVisualization
 |    README.md
 |    main.py
-|    test.py
 |
 └─── Base
 |      __init__.py
-|      DataProcessing.py
 |      Utility.py
 |      Model.py
 |      Train.py
-|      Predict.py
 |
 └─── 01-RAWData
 |       train.csv
 |       test.csv
 |
 └─── 02-Output
-|       ...
+|       IsCenter
+|         lambda=0.0epoch=0.jpg
+|         lambda=0.0epoch=1.jpg
+|         ...
+|
+|       NonCenter
+|         epoch=0.jpg
+|         epoch=1.jpg
+|         ...
 |___
 ```
 

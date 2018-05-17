@@ -17,8 +17,8 @@ def VisualizeCoordinate(arrayOutputs, arrayLabels, epoch, folatLambda, strOutput
     YMax = np.max(arrayOutputs[:,0])
     YMin = np.min(arrayOutputs[:,1])
 
-    plt.xlim(xmin=XMin, xmax=XMax)
-    plt.ylim(ymin=YMin, ymax=YMax)
+    # plt.xlim(xmin=XMin, xmax=XMax)
+    # plt.ylim(ymin=YMin, ymax=YMax)
     plt.text(XMin, YMax, "lambda={} epoch={}".format(folatLambda, epoch))
     plt.savefig(os.path.join(strOutputFolderPath, "lambda={}epoch={}.jpg").format(folatLambda, epoch))
 

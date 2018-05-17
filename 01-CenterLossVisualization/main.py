@@ -2,7 +2,6 @@ import sys, os
 import numpy as np
 import keras
 from keras.datasets import mnist
-from keras import backend as K
 from keras.models import Model
 from Base import Utility, Train, Model
 
@@ -26,8 +25,8 @@ dictModelPara["intKernelSize1"] = (5, 5)
 dictModelPara["intKernelSize2"] = (3, 3)
 dictModelPara["intHiddenSize"] = 2
 dictModelPara["intClassesNum"] = 10
-dictModelPara["boolCenterLoss"] = True
-dictModelPara["floatLambda"] = 0.5
+dictModelPara["boolCenterLoss"] = False
+dictModelPara["floatLambda"] = 0.0
 
 (arrayTrainX, arrayTrainY), (arrayValidX, arrayValidY) = mnist.load_data()
 

@@ -8,18 +8,13 @@ import keras.backend as K
 def CNN(dictModelPara):
 
     inputs = Input(shape=(dictModelPara["intImageW"], dictModelPara["intImageH"], dictModelPara["intImageC"]), name="inputs")
-
     x = Conv2D(filters=dictModelPara["intConvL1"], kernel_size=dictModelPara["intKernelSize1"])(inputs)
-    x = BatchNormalization(axis=-1)(x)
     x = PReLU()(x)
     x = Conv2D(filters=dictModelPara["intConvL1"], kernel_size=dictModelPara["intKernelSize1"])(x)
-    x = BatchNormalization(axis=-1)(x)
     x = PReLU()(x)
     x = Conv2D(filters=dictModelPara["intConvL2"], kernel_size=dictModelPara["intKernelSize2"])(x)
-    x = BatchNormalization(axis=-1)(x)
     x = PReLU()(x)
     x = Conv2D(filters=dictModelPara["intConvL2"], kernel_size=dictModelPara["intKernelSize2"])(x)
-    x = BatchNormalization(axis=-1)(x)
     x = PReLU()(x)
 
     x = Flatten()(x)
