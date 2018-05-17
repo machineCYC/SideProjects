@@ -1,6 +1,7 @@
 import sys, os
 import numpy as np
 import keras
+import keras.backend as K
 from keras.datasets import mnist
 from keras.models import Model
 from Base import Utility, Train, Model

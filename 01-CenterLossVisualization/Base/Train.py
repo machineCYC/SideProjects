@@ -5,7 +5,7 @@ from keras.callbacks import ModelCheckpoint, CSVLogger
 
 
 strProjectFolderPath = os.path.dirname(os.path.dirname(__file__))
-strOutputFolderPath = os.path.join(strProjectFolderPath, "Output")
+strOutputFolderPath = os.path.join(strProjectFolderPath, "02-Output")
 
 def getTrain(dictModelPara, dictHyperPara, arrayTrain, arrayValid):
 
