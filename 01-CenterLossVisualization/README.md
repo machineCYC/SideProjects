@@ -28,7 +28,7 @@ MNIST datasets 包含從零到九的手繪數字的灰度圖像。
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=-\sum_{i=1}^{m}log\frac{e^{W_{y}^{T}x&plus;b_{y}}}{\sum_{j=1}^{n}e^{W_{j}^{T}x&plus;b_{j}}}&plus;\lambda&space;\left&space;\|&space;x-c_{y}&space;\right&space;\|" target="_blank"><img src="https://latex.codecogs.com/gif.latex?-\sum_{i=1}^{m}log\frac{e^{W_{y}^{T}x&plus;b_{y}}}{\sum_{j=1}^{n}e^{W_{j}^{T}x&plus;b_{j}}}&plus;\lambda&space;\left&space;\|&space;x-c_{y}&space;\right&space;\|" title="-\sum_{i=1}^{m}log\frac{e^{W_{y}^{T}x+b_{y}}}{\sum_{j=1}^{n}e^{W_{j}^{T}x+b_{j}}}+\lambda \left \| x-c_{y} \right \|" /></a>
 
-本次假設 x 的維度為2維，以利後續作視覺化的呈現。下圖左邊兩張圖為 NN 單純使用 Softmax + Crossentropy 的方式所訓練出來的 feature。左上為經過一次 epoch 所得到 feature。左下則經過30個 epoch 所獲得的 feature。清楚的知道 feature 從一開始混在一起，到後來各類別似乎都已某個中心點向外延伸。這也清楚的說明這樣的訓練方式只會使資料盡量被歸到所屬的類別，不能夠將不同的類別的距離拉開。
+本次假設 x 的維度為2維，以利後續作視覺化的呈現，<a href="https://www.codecogs.com/eqnedit.php?latex=\lambda&space;=0.5" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\lambda&space;=0.5" title="\lambda =0.5" /></a>。下圖左邊兩張圖為 NN 單純使用 Softmax + Crossentropy 的方式所訓練出來的 feature。左上為經過一次 epoch 所得到 feature。左下則經過30個 epoch 所獲得的 feature。清楚的知道 feature 從一開始混在一起，到後來各類別似乎都已某個中心點向外延伸。這也清楚的說明這樣的訓練方式只會使資料盡量被歸到所屬的類別，不能夠將不同的類別的距離拉開。
 
 右邊兩張圖則加入 center loss 概念的結果。右上為經過一次 epoch 所得到 feature。右下則經過30個 epoch 所獲得的 feature。從途中可以得知經過30個 epoch 之後，各類別分別聚集成一團，彼此分開，這也再次說明 center loss 可以幫助我們訓練出一個具有 cluster 特性的 feature 。我相信如果訓練的 epoch 夠多的話，一定可以將資料區分得更清楚。
 
