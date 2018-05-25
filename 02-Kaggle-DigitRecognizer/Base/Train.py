@@ -7,7 +7,7 @@ strProjectFolderPath = os.path.dirname(os.path.dirname(__file__))
 strOutputFolderPath = os.path.join(strProjectFolderPath, "02-Output")
 
 def getTrain(dictModelPara, dictHyperPara, arrayTrain, arrayValid):
-    history = Utility.recordsAccLossHistory(boolTrain=dictHyperPara["boolTrain"], strOutputFolderPath=strOutputFolderPath)
+    history = Utility.recordsAccLossHistory(boolTrain=dictHyperPara["boolTrain"], dictModelPara=dictModelPara, dictHyperPara=dictHyperPara, strOutputFolderPath=strOutputFolderPath)
 
     if dictHyperPara["boolTrain"]:
         strSaveFolderPath = os.path.join(strOutputFolderPath, "01Train")

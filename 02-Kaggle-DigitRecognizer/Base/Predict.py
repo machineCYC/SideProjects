@@ -5,7 +5,7 @@ from keras.models import load_model
 
 def makePredict(arrayTest, strOutputFolder):
 
-    strModelPath = os.path.join(strOutputFolder, "model.h5")
+    strModelPath = os.path.join(strOutputFolder, "02Test/model.h5")
     
     model = load_model(strModelPath)
 
