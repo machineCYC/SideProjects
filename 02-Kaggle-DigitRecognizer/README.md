@@ -67,6 +67,12 @@ MNIST datasets 包含從零到九的手繪數字的灰度圖像。
     <img src="02-Output/01Train/FiltersResultImage0conv2d_4.png" height="300px">
 </div>
 
+<div class="center">
+    <img src="02-Output/01Train/FiltersWhiteNoiseactivation_1.png" height="300px">
+    <img src="02-Output/01Train/FiltersWhiteNoiseactivation_2.png" height="300px">
+    <img src="02-Output/01Train/FiltersWhiteNoiseactivation_3.png" height="300px">
+    <img src="02-Output/01Train/FiltersWhiteNoiseactivation_4.png" height="300px">
+</div>
 ## File Stucture
 
 ```
