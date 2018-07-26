@@ -397,7 +397,24 @@ def conv_forward_naive(x, w, b, conv_param):
   # TODO: Implement the convolutional forward pass.                           #
   # Hint: you can use the function np.pad for padding.                        #
   #############################################################################
-  pass
+  N, C, H, W = x.shape
+  F, C, HH, WW = w.shape
+
+  S = conv_param["stride"]
+  P = conv_param["pad"]
+
+  out_H = np.int(((H + 2 * P - HH) / S) + 1)
+  out_W = np.int(((W + 2 * P - WW) / S) + 1)
+
+  pad_X = np.pad(x, ((0, 0), (0, 0), (P, P), (P, P)), "constant")
+
+  out = np.zeros([N, F, out_H, out_W])
+
+  for n in range(N):
+    for f in range(F):
+      for oh in range(out_H):
+        for ow in range(out_W):
+          out[n, f, oh, ow] = np.sum(pad_X[n, :, oh*S:oh*S + HH, ow*S:ow*S + WW] * w[f]) + b[f]
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -422,7 +439,20 @@ def conv_backward_naive(dout, cache):
   #############################################################################
   # TODO: Implement the convolutional backward pass.                          #
   #############################################################################
-  pass
+  x, w, b, conv_param = cache
+
+  N, C, H, W = x.shape
+  F, C, HH, WW = w.shape
+
+  S = conv_param["stride"]
+  P = conv_param["pad"]
+
+  dx = np.zeros_like(x)
+  dw = np.zeros_like(w)
+  db = np.zeros_like(b)
+
+  for f in range(F):
+    db[f] += np.sum(dout, axis=(0, 1, 2))
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
