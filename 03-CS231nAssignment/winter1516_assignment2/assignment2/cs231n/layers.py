@@ -596,7 +596,8 @@ def spatial_batchnorm_forward(x, gamma, beta, bn_param):
   # version of batch normalization defined above. Your implementation should  #
   # be very short; ours is less than five lines.                              #
   #############################################################################
-  pass
+
+  out, cache = batchnorm_forward(x, gamma, beta, bn_param)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################

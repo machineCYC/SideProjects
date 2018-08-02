@@ -52,7 +52,8 @@ class ThreeLayerConvNet(object):
     self.params["W1"] = np.random.normal(0, weight_scale, [num_filters, C, filter_size, filter_size])
     self.params["b1"] = np.zeros([num_filters])
 
-    self.params["W2"] = np.random.normal(0, weight_scale, [(int((H-2)/2) + 1) * (int((W-2)/2) + 1) * num_filters, hidden_dim])
+    # (H - 2)/2 + 1 = H/2
+    self.params["W2"] = np.random.normal(0, weight_scale, [int(H/2) * int(W/2) * num_filters, hidden_dim])
     self.params["b2"] = np.zeros([hidden_dim])
 
     self.params["W3"] = np.random.normal(0, weight_scale, [hidden_dim, num_classes])
@@ -97,7 +98,7 @@ class ThreeLayerConvNet(object):
 
     h3, cache_h3 = affine_forward(a2, W3, b3)
 
-    scores = h3.copy()
+    scores = h3
     ############################################################################
     #                             END OF YOUR CODE                             #
     ############################################################################
