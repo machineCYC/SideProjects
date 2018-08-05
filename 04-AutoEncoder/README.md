@@ -1,0 +1,1 @@
+1. weight initilial 如果使用 normal 效果很非常差，爾truncat normal 會改善很多
