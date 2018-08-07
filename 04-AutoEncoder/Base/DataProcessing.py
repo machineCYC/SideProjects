@@ -18,7 +18,7 @@ class prepareData(object):
         """
         self.dictData = {} 
 
-    def cleanData(self, strDataFileName, boolLabel):
+    def cleanData(self, strDataFileName, boolLabel, boolNormal):
         """
         Split the data and label
 
@@ -31,8 +31,14 @@ class prepareData(object):
         if boolLabel:
             self.dictData["Data"] = pdData.drop(labels=["label"], axis=1).values
             self.dictData["Label"] = pdData["label"].values
+
+            if boolNormal:
+                self.doNormalize()
         else:
             self.dictData["Data"] = pdData.values
+            
+            if boolNormal:
+                self.doNormalize()
 
     def doNormalize(self):
         """
