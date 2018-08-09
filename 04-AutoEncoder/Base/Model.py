@@ -1,5 +1,5 @@
 import tensorflow as tf
-import time
+import time, os
 import numpy as np
 
 
@@ -25,6 +25,10 @@ class AutoEncoder(object):
         self.n_input = n_input
         self.build(n_input, n_hidden, float_Learning_rate) 
         self.sess = tf.Session()
+        self.saver = tf.train.Saver()
+        
+        self.merge = tf.summary.merge_all()
+        self.writer = tf.summary.FileWriter(os.path.join(os.path.dirname(os.path.dirname(__file__)), "02-Output/"), self.sess.graph)
 
 
     def build(self, n_input, n_hidden, float_Learning_rate):
@@ -35,21 +39,24 @@ class AutoEncoder(object):
         - n_hidden: The same as above.
         - float_Learning_rate: The same as above.
         """
-
         # define Input
-        self.X = tf.placeholder(dtype=tf.float32, shape=[None, n_input])
-        self.Y = tf.placeholder(dtype=tf.float32, shape=[None, n_input])
+        with tf.name_scope("Inputs"):
+            self.X = tf.placeholder(dtype=tf.float32, shape=[None, n_input], name="X_input")
+            self.Y = tf.placeholder(dtype=tf.float32, shape=[None, n_input], name="Y_input")
+
+        with tf.name_scope("input_reshape"):  
+            input_image = tf.reshape(self.X, [-1, 28, 28, 1])  
+            tf.summary.image("input", input_image, 10) 
 
         # build autoencoder
         self.Loss, self.Decoder, self.Encoder = self.structure(X=self.X, Y=self.Y, n_hidden=n_hidden)
 
         # optimization
-        self.Optimizer = tf.train.AdamOptimizer(float_Learning_rate).minimize(self.Loss)
+        with tf.name_scope("Train"):
+            self.Optimizer = tf.train.AdamOptimizer(float_Learning_rate).minimize(self.Loss)
 
         # initialization
         self.init = tf.global_variables_initializer()
-        
-        self.saver = tf.train.Saver()
 
 
     def structure(self, X, Y, n_hidden):
@@ -68,35 +75,60 @@ class AutoEncoder(object):
         # Encoder variable
         n_Encoder = [self.n_input] + n_hidden
         for layer, layer_size in enumerate(n_Encoder[:-1]):
-            self.weights["encoder_h{}".format(layer + 1)] = tf.Variable(tf.truncated_normal(shape=[layer_size, n_Encoder[layer + 1]], stddev=0.1))
-            self.biases["encoder_b{}".format(layer + 1)] = tf.Variable(tf.constant(0.1, shape=[n_Encoder[layer + 1]]))
-        
+            
+            with tf.name_scope("En_Weights{}".format(layer + 1)):
+                self.weights["encoder_w{}".format(layer + 1)] = tf.Variable(tf.truncated_normal(shape=[layer_size, n_Encoder[layer + 1]], stddev=0.1), name="en_w{}".format(layer + 1))
+                tf.summary.histogram("layer{}/weights".format(layer + 1), self.weights["encoder_w{}".format(layer + 1)])
+            
+            with tf.name_scope("En_Biase{}".format(layer + 1)):
+                self.biases["encoder_b{}".format(layer + 1)] = tf.Variable(tf.constant(0.1, shape=[n_Encoder[layer + 1]]), name="en_b{}".format(layer + 1))
+                tf.summary.histogram("layer{}/biases".format(layer + 1), self.biases["encoder_b{}".format(layer + 1)])
+
         # Decoder variable
         n_Decoder = list(reversed(n_hidden)) + [self.n_input]
         for layer, layer_size in enumerate(n_Decoder[:-1]):
-            self.weights["decoder_h{}".format(layer + 1)] = tf.Variable(tf.truncated_normal(shape=[layer_size, n_Decoder[layer + 1]], stddev=0.1))
-            self.biases["decoder_b{}".format(layer + 1)] = tf.Variable(tf.constant(0.1, shape=[n_Decoder[layer + 1]]))
+
+            with tf.name_scope("De_Weights{}".format(layer + 1)):
+                self.weights["decoder_w{}".format(layer + 1)] = tf.Variable(tf.truncated_normal(shape=[layer_size, n_Decoder[layer + 1]], stddev=0.1), name="de_w{}".format(layer + 1))
+                tf.summary.histogram("layer{}/weights".format(layer + 1), self.weights["decoder_w{}".format(layer + 1)])
+
+            with tf.name_scope("De_Biases{}".format(layer + 1)):
+                self.biases["decoder_b{}".format(layer + 1)] = tf.Variable(tf.constant(0.1, shape=[n_Decoder[layer + 1]]), name="de_b{}".format(layer + 1))
+                tf.summary.histogram("layer{}/biases".format(layer + 1), self.biases["decoder_b{}".format(layer + 1)])
 
 
         # Encoder
-        Encoder = tf.nn.relu(tf.add(tf.matmul(X, self.weights["encoder_h1"]), self.biases["encoder_b1"]))
+        Encoder = self.fc_layer(hidden_layer=X, weights=self.weights["encoder_w1"], biases=self.biases["encoder_b1"], name="Encoder_Layer{}".format(1))
+        tf.summary.histogram("Encoder_layer{}".format(1), Encoder)
+
         for layer in range(1, len(n_hidden)):
-            Encoder = tf.nn.relu(tf.add(tf.matmul(Encoder, self.weights["encoder_h{}".format(layer + 1)]), self.biases["encoder_b{}".format(layer + 1)]))
+            Encoder = self.fc_layer(hidden_layer=Encoder, weights=self.weights["encoder_w{}".format(layer + 1)], biases=self.biases["encoder_b{}".format(layer + 1)], name="Encoder_Layer{}".format(layer + 1))
+            tf.summary.histogram("Encoder_layer{}".format(layer + 1), Encoder)
 
         # Decoder
-        Decoder = tf.nn.relu(tf.add(tf.matmul(Encoder, self.weights["decoder_h1"]), self.biases["decoder_b1"]))
-        for layer in range(1, len(n_hidden)-1):
-            Decoder = tf.nn.relu(tf.add(tf.matmul(Decoder, self.weights["decoder_h{}".format(layer + 1)]), self.biases["decoder_b{}".format(layer + 1)]))
+        Decoder = self.fc_layer(hidden_layer=Encoder, weights=self.weights["decoder_w1"], biases=self.biases["decoder_b1"], name="Decoder_Layer{}".format(1))
+        tf.summary.histogram("Decoder_layer{}".format(1), Decoder)
 
-        Decoder = tf.nn.relu(tf.add(tf.matmul(Decoder, self.weights["decoder_h{}".format(len(n_hidden))]), self.biases["decoder_b{}".format(len(n_hidden))]))
+        for layer in range(1, len(n_hidden)):
+            Decoder = self.fc_layer(hidden_layer=Decoder, weights=self.weights["decoder_w{}".format(layer + 1)], biases=self.biases["decoder_b{}".format(layer + 1)], name="Decoder_Layer{}".format(layer + 1))
+            tf.summary.histogram("Decoder_layer{}".format(layer + 1), Decoder)
+
+        # with tf.name_scope("Decoder_Layer{}".format(len(n_hidden))):
+        #     Decoder = tf.nn.relu(tf.add(tf.matmul(Decoder, self.weights["decoder_w{}".format(len(n_hidden))]), self.biases["decoder_b{}".format(len(n_hidden))]))
+        #     tf.summary.histogram("layer{}/Decoder".format(len(n_hidden)), Decoder)
 
         # Loss
-        Loss = tf.reduce_mean(tf.pow(Decoder - Y, 2))
+        with tf.name_scope("Loss"):
+            Loss = tf.reduce_mean(tf.pow(Decoder - Y, 2))
+            tf.summary.scalar("Loss", Loss) # In tensorboard event
         
         return Loss, Decoder, Encoder 
 
+    def fc_layer(self, hidden_layer, weights, biases, name):
+        with tf.name_scope(name):
+            return tf.nn.relu(tf.add(tf.matmul(hidden_layer, weights), biases))
 
-    def fit(self, X, Y, int_Epochs, int_Batch_size):
+    def fit(self, X, Y, int_Epochs, int_Batch_size, validation_data):
         """
         Run optimization to train the model.
 
@@ -109,7 +141,6 @@ class AutoEncoder(object):
         self.sess.run(self.init)
 
         N = X.shape[0]
-        list_Loss = []
         for epoch in range(int_Epochs):
             start_time = time.time()
 
@@ -120,17 +151,28 @@ class AutoEncoder(object):
 
                 _, L = self.sess.run([self.Optimizer, self.Loss], feed_dict = {self.X:X[batch_index],
                                                                                self.Y:Y[batch_index]})
+            
+            if validation_data is not None:
+                Valid_Loss = self.evaluate(validation_data[0], validation_data[1])
+                tf.summary.scalar("Valid_Loss", Valid_Loss) # In tensorboard event
 
-            list_Loss.append(np.round(L, 5))
-            print("Epoch:{}".format(epoch + 1), "{:.2f}s".format(time.time()-start_time), "Loss:{:.5f}".format(L))
+             # visulization wieght, biases and loss in tensorboard
+            variable_process = self.sess.run(self.merge, feed_dict={self.X:X[batch_index], self.Y:Y[batch_index]})
+            self.writer.add_summary(variable_process, epoch)
 
-        return list_Loss
+            print("Epoch:{}".format(epoch + 1), "{:.2f}s".format(time.time()-start_time), "Train Loss:{:.5f}".format(L), ", Valid Loss:{:.5}".format(Valid_Loss))
+
+        return
+
 
     def predict(self, X):
         return self.sess.run(self.Decoder, feed_dict={self.X: X})
 
-    def Code(self, X):
+    def code(self, X):
         return self.sess.run(self.Encoder, feed_dict={self.X: X})
+
+    def evaluate(self, X, Y):
+        return self.sess.run(self.Loss, feed_dict={self.X: X, self.Y: Y})
 
     def save(self, path):
         save_path = self.saver.save(self.sess, path)
@@ -139,5 +181,3 @@ class AutoEncoder(object):
     def reload(self, path):
         self.saver.restore(self.sess, path)
         print("reload AutoEncoder: ", path)
-
-
