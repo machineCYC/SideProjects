@@ -1,6 +1,4 @@
-
 import os
-import tensorflow as tf
 from Base import DataProcessing, Model
 import matplotlib.pyplot as plt
 import numpy as np
@@ -53,4 +51,3 @@ for i in range(10):
     img_train = np.reshape(AutoEncoder.predict(mnist_train[i].reshape(-1, 784)), (28, 28))
     axis[1][i].imshow(img_train, cmap="gray")
 plt.savefig(os.path.join(strOutputFolderPath, "recons_Train.jpg"))
-
