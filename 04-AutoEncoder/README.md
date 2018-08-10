@@ -68,9 +68,12 @@ Encoder 主要功能為將原始圖片壓縮成 code，其實就是做 Dimension
 |
 └─── 02-Output/
 |       AutoEncoder.data-00000-of-00001
+|       AutoEncoder.index
+|       AutoEncoder.meta
+|       checkpoint
+|       Loss_Curve_lr0.0005png
+|       main_graph.png
+|       recons_Test.jpg
+|       recons_Train.jpg
 |___
 ```
-
-https://www.ycc.idv.tw/tensorflow-tutorial_4.html
-
-https://github.com/floydhub/tensorflow-notebooks-examples/blob/master/README.md
