@@ -13,7 +13,9 @@ strOutputFolderPath = os.path.join(strProjectFolderPath, "02-Output")
 # prepare data
 ETL = DataProcessing.prepareData()
 ETL.cleanData(strDataFileName="train.csv", boolLabel=True, boolNormal=True)
-mnist = ETL.dictData["Data"]
+mnist_train = ETL.dictData["Data"]
+ETL.cleanData(strDataFileName="test.csv", boolLabel=False, boolNormal=True)
+mnist_test = ETL.dictData["Data"]
 
 # hyperparameter
 n_input = 784
@@ -28,25 +30,27 @@ AutoEncoder = Model.AutoEncoder(n_input=n_input
                               , float_Learning_rate=folat_Learning_rate)
 
 # training
-list_Loss = AutoEncoder.fit(X=mnist
-                          , Y=mnist
-                          , int_Epochs=int_Epochs
-                          , int_Batch_size=int_Batch_size)
+AutoEncoder.fit(X=mnist_train
+              , Y=mnist_train
+              , int_Epochs=int_Epochs
+              , int_Batch_size=int_Batch_size
+              , validation_data=(mnist_test, mnist_test))
 
-plt.plot(np.arange(len(list_Loss)), list_Loss)
-plt.savefig(os.path.join(strOutputFolderPath, "LossCurve_lr={}.jpg").format(folat_Learning_rate))
+print("Run the command line:\n" \
+      "--> tensorboard --logdir=\"Tensorboard/train/\", Tensorboard/vaild/\"" \
+      "\nThen open http://asus:6006 into your web browser")
 
+
+# save model
 AutoEncoder.save(path=os.path.join(strOutputFolderPath, "AutoEncoder"))
 
-AutoEncoder.reload(path=os.path.join(strOutputFolderPath, "AutoEncoder"))
-
-# reconstruct images
+# reconstruct training images
 fig, axis = plt.subplots(2, 10, figsize=(10, 2))
 for i in range(10):
-    img_train_org = mnist[i].reshape(28, 28)
+    img_train_org = mnist_train[i].reshape(28, 28)
     axis[0][i].imshow(img_train_org, cmap="gray")
 
-    img_train = np.reshape(AutoEncoder.predict(mnist[i].reshape(-1, 784)), (28, 28))
+    img_train = np.reshape(AutoEncoder.predict(mnist_train[i].reshape(-1, 784)), (28, 28))
     axis[1][i].imshow(img_train, cmap="gray")
 plt.savefig(os.path.join(strOutputFolderPath, "recons_Train.jpg"))
 
