@@ -29,8 +29,8 @@ class AutoEncoder(object):
         self.saver = tf.train.Saver()
 
         self.merge = tf.summary.merge_all()
-        self.train_writer = tf.summary.FileWriter(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "Tensorboard/train/"), self.sess.graph)
-        self.valid_writer = tf.summary.FileWriter(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "Tensorboard/vaild/"))
+        self.train_writer = tf.summary.FileWriter(os.path.join(os.path.dirname(os.path.dirname(__file__)), "Tensorboard/train/"), self.sess.graph)
+        self.valid_writer = tf.summary.FileWriter(os.path.join(os.path.dirname(os.path.dirname(__file__)), "Tensorboard/vaild/"))
 
 
     def build(self, n_input, n_hidden, float_Learning_rate):
