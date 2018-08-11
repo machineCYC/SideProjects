@@ -32,14 +32,19 @@ Encoder 主要功能為將原始圖片壓縮成 code，其實就是做 Dimension
 
 我們會透過整個 Autoencoder 來觀察 image 經過 Eencoder 壓縮成 code，在經過 Decoder 解壓還原的 image 和原來 image 之間的差異。
 
+下圖為將 training image 重建的結果，可以發現一些筆畫比較簡單的數字重建效果還不錯 ex:1 , 0。至於其他數字就有典糢糊，4重建效果就很差。代表這模型還有很多地方需要改善。
+
 ![](02-Output/recons_Train.jpg)
+
+下圖將 testing image 重建的結果，整體效果還不錯，但 0 和 9 對模型來說可能就會搞混。
 
 ![](02-Output/recons_Test.jpg)
 
-另外也會藉由視覺化的方式來呈現 image 經過獨使用 Encoder 所得到的 code 之間的分布狀況。
+另外也會藉由視覺化的方式來呈現 image 經過獨使用 Encoder 所得到的 code 之間的分布狀況。如下圖所示:
 
+![](02-Output/2dim_train.jpg)
 
-# TODO 2dim visulization
+因為 activation 都選用 relu 導致出來的數值都大於 0，另外每個類別的區分以大方向來說還算可以，但各類別之間就沒有很明顯，或許可以利用增加 [Center Loss](https://github.com/machineCYC/SideProjects/tree/master/01-CenterLossVisualization) 的概念還補強這狀況。
 
 
 ## File Stucture
@@ -47,19 +52,20 @@ Encoder 主要功能為將原始圖片壓縮成 code，其實就是做 Dimension
 ```
 04-AutoEncoder/
 |    README.md
-|    main.py
-|    test.py
+|    train.py
+|    visulization.py
 |
 └─── Tensorboard/
 |      train/
 |         xxxxxxx.ASUS
-|      test/
+|      vaild/
 |         xxxxxxx.ASUS
 |
 └─── Base/
 |      __init__.py
 |      DataProcessing.py
 |      Model.py
+|      Utility.py
 |
 └─── 01-RAWData/
 |       train.csv
@@ -71,9 +77,9 @@ Encoder 主要功能為將原始圖片壓縮成 code，其實就是做 Dimension
 |       AutoEncoder.index
 |       AutoEncoder.meta
 |       checkpoint
-|       Loss_Curve_lr0.0005png
 |       main_graph.png
 |       recons_Test.jpg
 |       recons_Train.jpg
+|       2dim_train.jpg
 |___
 ```
