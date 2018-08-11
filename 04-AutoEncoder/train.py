@@ -10,8 +10,12 @@ strOutputFolderPath = os.path.join(strProjectFolderPath, "02-Output")
 
 # prepare data
 ETL = DataProcessing.prepareData()
+
+# preapre train data
 ETL.cleanData(strDataFileName="train.csv", boolLabel=True, boolNormal=True)
 mnist_train = ETL.dictData["Data"]
+
+# preapre vaild data
 ETL.cleanData(strDataFileName="test.csv", boolLabel=False, boolNormal=True)
 mnist_test = ETL.dictData["Data"]
 
@@ -41,13 +45,3 @@ print("Run the command line:\n" \
 
 # save model
 AutoEncoder.save(path=os.path.join(strOutputFolderPath, "AutoEncoder"))
-
-# reconstruct training images
-fig, axis = plt.subplots(2, 10, figsize=(10, 2))
-for i in range(10):
-    img_train_org = mnist_train[i].reshape(28, 28)
-    axis[0][i].imshow(img_train_org, cmap="gray")
-
-    img_train = np.reshape(AutoEncoder.predict(mnist_train[i].reshape(-1, 784)), (28, 28))
-    axis[1][i].imshow(img_train, cmap="gray")
-plt.savefig(os.path.join(strOutputFolderPath, "recons_Train.jpg"))
