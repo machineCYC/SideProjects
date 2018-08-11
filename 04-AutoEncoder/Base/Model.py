@@ -27,10 +27,7 @@ class AutoEncoder(object):
         self.build(n_input, n_hidden, float_Learning_rate) 
         self.sess = tf.Session()
         self.saver = tf.train.Saver()
-
         self.merge = tf.summary.merge_all()
-        self.train_writer = tf.summary.FileWriter(os.path.join(os.path.dirname(os.path.dirname(__file__)), "Tensorboard/train/"), self.sess.graph)
-        self.valid_writer = tf.summary.FileWriter(os.path.join(os.path.dirname(os.path.dirname(__file__)), "Tensorboard/vaild/"))
 
 
     def build(self, n_input, n_hidden, float_Learning_rate):
@@ -143,6 +140,8 @@ class AutoEncoder(object):
         - int_Epochs: The number of epochs to run for during training.
         - int_Batch_size: Size of minibatches used to compute loss and gradient during training.
         """
+        train_writer = tf.summary.FileWriter(os.path.join(os.path.dirname(os.path.dirname(__file__)), "Tensorboard/train/"), self.sess.graph)
+        valid_writer = tf.summary.FileWriter(os.path.join(os.path.dirname(os.path.dirname(__file__)), "Tensorboard/vaild/"))
 
         self.sess.run(self.init)
 
@@ -157,15 +156,14 @@ class AutoEncoder(object):
 
                 _, Train_Loss, train_summary = self.sess.run([self.Optimizer, self.Loss, self.merge], feed_dict = {self.X:X[batch_index],
                                                                                                                    self.Y:Y[batch_index]})
-            self.train_writer.add_summary(train_summary, epoch)
+            train_writer.add_summary(train_summary, epoch)
             
             if validation_data is not None:
                 Valid_Loss, valid_summary = self.sess.run([self.Loss, self.merge], feed_dict = {self.X:validation_data[0],
                                                                                                 self.Y:validation_data[1]})
-                self.valid_writer.add_summary(valid_summary, epoch)
+                valid_writer.add_summary(valid_summary, epoch)
 
             print("Epoch:{}".format(epoch + 1), "{:.2f}s".format(time.time()-start_time), "Train Loss:{:.5f}".format(Train_Loss), ", Valid Loss:{:.5}".format(Valid_Loss))
-
         return
 
 

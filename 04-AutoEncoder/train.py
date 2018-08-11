@@ -1,7 +1,7 @@
 import os
-from Base import DataProcessing, Model
-import matplotlib.pyplot as plt
 import numpy as np
+
+from Base import DataProcessing, Model
 
 
 strProjectFolderPath = os.path.dirname(__file__)
