@@ -36,11 +36,11 @@ AutoEncoder = Model.AutoEncoder(n_input=n_input
                               , float_Learning_rate=folat_Learning_rate)
 
 # training
-AutoEncoder.fit(X=mnist_noise_train
+AutoEncoder.fit(X=mnist_train
               , Y=mnist_train
               , int_Epochs=int_Epochs
               , int_Batch_size=int_Batch_size
-              , validation_data=(mnist_noise_test, mnist_test))
+              , validation_data=(mnist_test, mnist_test))
 
 print("Run the command line:\n" \
       "--> tensorboard --logdir=\"Tensorboard/train/\", Tensorboard/vaild/\"" \
