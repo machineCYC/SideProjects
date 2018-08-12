@@ -22,7 +22,7 @@ Autoencoder 概念很簡單，主要就是資訊的壓縮。主要概念是，�
 
 Encoder 主要功能為將原始圖片壓縮成 code，其實就是做 Dimension Reduction，而這個 code 包含 image 中重要的資訊，也是在這個新的維度下的座標，另外我們也可以透過這個 code 來衡量資料資間的相似程度。Decoder 主要為將 code 重新還原成 image。
 
-模型架構如下面所示:
+模型架構的部分，在最後一個 encoder 沒有使用 activation 主要是因為之後要透過 2-dim 將 code 的部分視覺化，才特地這樣使用。模型架構如下面所示:
 
 ![](02-Output/main_graph.png)
 
@@ -32,7 +32,7 @@ Encoder 主要功能為將原始圖片壓縮成 code，其實就是做 Dimension
 
 我們會透過整個 Autoencoder 來觀察 image 經過 Eencoder 壓縮成 code，在經過 Decoder 解壓還原的 image 和原來 image 之間的差異。
 
-下圖為將 training image 重建的結果，可以發現一些筆畫比較簡單的數字重建效果還不錯 ex:1 , 0。至於其他數字就有典糢糊，4重建效果就很差。代表這模型還有很多地方需要改善。
+下圖為第二列為將 training image 重建的結果，可以發現一些筆畫比較簡單的數字重建效果還不錯 ex:1 , 0。至於其他數字就有典糢糊，4重建效果就很差，5 和 3 因為有些部分滿像的，模型需要更多資訊或者是更長的時間才能將其還原。代表這模型還有很多地方需要改善。
 
 ![](02-Output/recons_Train.jpg)
 
@@ -46,6 +46,21 @@ Encoder 主要功能為將原始圖片壓縮成 code，其實就是做 Dimension
 
 因為 activation 都選用 relu 導致出來的數值都大於 0，另外每個類別的區分以大方向來說還算可以，但各類別之間就沒有很明顯，或許可以利用增加 [Center Loss](https://github.com/machineCYC/SideProjects/tree/master/01-CenterLossVisualization) 的概念還補強這狀況。
 
+最後也嘗試了 De-noise Autoencoder，整體結構跟前面所說的 Autoencoder 是一樣的，差別在於我們將原始圖片增加了一點 noise，希望透過 training 的過程中找到一個可以 de-noise 的 Autoencoder 將有 noise 的照片還原成原始照片。結果如下圖所示:
+
+下圖第一列為 training image，第二列為增加 nosie 的 training image，第三列為重建過後的 image。
+
+![](02-Output/recons_noise_Train.jpg)
+
+下圖第一列為 testing image，第二列為增加 nosie 的 testing image，第三列為重建過後的 image。
+
+![](02-Output/recons_noise_Test.jpg)
+
+整體結果跟一般的 Autoencoder 差不多。之後可以透過不同的 noise 程度去觀察 image 重建之後會有什麼變化。
+
+## Note
+
+1. initial weight 的 truncat normal mean=0.01 似乎學不到東西
 
 ## File Stucture
 
@@ -81,5 +96,8 @@ Encoder 主要功能為將原始圖片壓縮成 code，其實就是做 Dimension
 |       recons_Test.jpg
 |       recons_Train.jpg
 |       2dim_train.jpg
+|       .
+|       .
+|       .
 |___
 ```

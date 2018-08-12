@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-from Base import DataProcessing, Model
+from Base import DataProcessing, Model, Utility
 
 
 strProjectFolderPath = os.path.dirname(__file__)
@@ -19,11 +19,15 @@ mnist_train = ETL.dictData["Data"]
 ETL.cleanData(strDataFileName="test.csv", boolLabel=False, boolNormal=True)
 mnist_test = ETL.dictData["Data"]
 
+# add noise
+# mnist_noise_train = Utility.add_noise(mnist_train, noise_factor=0.3)
+# mnist_noise_test = Utility.add_noise(mnist_test, noise_factor=0.3)
+
 # hyperparameter
 n_input = 784
-n_hidden = [256, 64, 2]
+n_hidden = [256, 64, 32, 2]
 folat_Learning_rate = 0.0005
-int_Epochs = 150
+int_Epochs = 100
 int_Batch_size = 200
 
 # model
@@ -32,11 +36,11 @@ AutoEncoder = Model.AutoEncoder(n_input=n_input
                               , float_Learning_rate=folat_Learning_rate)
 
 # training
-AutoEncoder.fit(X=mnist_train
+AutoEncoder.fit(X=mnist_noise_train
               , Y=mnist_train
               , int_Epochs=int_Epochs
               , int_Batch_size=int_Batch_size
-              , validation_data=(mnist_test, mnist_test))
+              , validation_data=(mnist_noise_test, mnist_test))
 
 print("Run the command line:\n" \
       "--> tensorboard --logdir=\"Tensorboard/train/\", Tensorboard/vaild/\"" \

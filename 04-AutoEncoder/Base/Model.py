@@ -102,22 +102,30 @@ class AutoEncoder(object):
                 self.biases["decoder_b{}".format(layer + 1)] = tf.Variable(tf.constant(0.1, shape=[n_Decoder[layer + 1]]), name="de_b{}".format(layer + 1))
                 tf.summary.histogram("layer{}/biases".format(layer + 1), self.biases["decoder_b{}".format(layer + 1)])
 
-
+        activation = tf.nn.relu
         # Encoder layer
-        Encoder = self.fc_layer(hidden_layer=X, weights=self.weights["encoder_w1"], biases=self.biases["encoder_b1"], name="Encoder_Layer{}".format(1))
+        Encoder = self.fc_layer(hidden_layer=X, weights=self.weights["encoder_w1"], biases=self.biases["encoder_b1"], activation=activation, name="Encoder_Layer{}".format(1))
         tf.summary.histogram("Encoder_layer{}".format(1), Encoder)
 
-        for layer in range(1, len(n_hidden)):
-            Encoder = self.fc_layer(hidden_layer=Encoder, weights=self.weights["encoder_w{}".format(layer + 1)], biases=self.biases["encoder_b{}".format(layer + 1)], name="Encoder_Layer{}".format(layer + 1))
+        for layer in range(1, len(n_hidden)-1):
+            Encoder = self.fc_layer(hidden_layer=Encoder, weights=self.weights["encoder_w{}".format(layer + 1)], biases=self.biases["encoder_b{}".format(layer + 1)], activation=activation, name="Encoder_Layer{}".format(layer + 1))
             tf.summary.histogram("Encoder_layer{}".format(layer + 1), Encoder)
+        
+        Encoder = self.fc_layer(hidden_layer=Encoder, weights=self.weights["encoder_w{}".format(len(n_hidden))], biases=self.biases["encoder_b{}".format(len(n_hidden))], activation=None, name="Encoder_Layer{}".format(len(n_hidden)))
+        tf.summary.histogram("Encoder_layer{}".format(len(n_hidden)), Encoder)
 
         # Decoder layer
-        Decoder = self.fc_layer(hidden_layer=Encoder, weights=self.weights["decoder_w1"], biases=self.biases["decoder_b1"], name="Decoder_Layer{}".format(1))
+        Decoder = self.fc_layer(hidden_layer=Encoder, weights=self.weights["decoder_w1"], biases=self.biases["decoder_b1"], activation=activation, name="Decoder_Layer{}".format(1))
         tf.summary.histogram("Decoder_layer{}".format(1), Decoder)
 
         for layer in range(1, len(n_hidden)):
-            Decoder = self.fc_layer(hidden_layer=Decoder, weights=self.weights["decoder_w{}".format(layer + 1)], biases=self.biases["decoder_b{}".format(layer + 1)], name="Decoder_Layer{}".format(layer + 1))
+            Decoder = self.fc_layer(hidden_layer=Decoder, weights=self.weights["decoder_w{}".format(layer + 1)], biases=self.biases["decoder_b{}".format(layer + 1)], activation=activation, name="Decoder_Layer{}".format(layer + 1))
             tf.summary.histogram("Decoder_layer{}".format(layer + 1), Decoder)
+
+        # Visulization 10 decod image
+        with tf.name_scope("Decode_Image"):  
+            decode_image = tf.reshape(Decoder, [-1, 28, 28, 1])  
+            tf.summary.image("Decode_Image", decode_image, 10) 
 
 
         # Loss
@@ -127,9 +135,12 @@ class AutoEncoder(object):
 
         return Loss, Decoder, Encoder 
 
-    def fc_layer(self, hidden_layer, weights, biases, name):
+    def fc_layer(self, hidden_layer, weights, biases, activation, name):
         with tf.name_scope(name):
-            return tf.nn.relu(tf.add(tf.matmul(hidden_layer, weights), biases))
+            h = tf.add(tf.matmul(hidden_layer, weights), biases)
+            if activation:
+                h = activation(h)
+            return h
 
     def fit(self, X, Y, int_Epochs, int_Batch_size, validation_data):
         """
