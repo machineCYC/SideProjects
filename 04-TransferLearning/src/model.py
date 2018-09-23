@@ -157,7 +157,7 @@ def add_final_training_ops(class_count, final_tensor_name, bottleneck_tensor, bo
 
     with tf.name_scope("train"):
         lr = learning_rate_init
-        step_rate = 80
+        step_rate = 65
         decay = 0.95
 
         global_step = tf.Variable(0, trainable=False)
