@@ -1,7 +1,8 @@
 # Transfer Learning
 
-## Purpose:
+## Purpose: Fine-tuning the last layer with pretrained model
 
+Take a ConvNet pretrained on ImageNet, remove the last fully-connected layer, then treat the rest of the ConvNet as a fixed feature extractor for the new dataset.
 
 ## Data 簡介
 
@@ -11,6 +12,7 @@
 
 ## Note
 
+tensorboard --logdir=tmp/retrain_logs/train/, tmp/retrain_logs/validation/
 
 ## File Stucture
 
