@@ -82,7 +82,7 @@ def _preprocess_and_save(features, labels, batch_i, data_folder_path):
     for i, (feature, label) in enumerate(zip(features, labels)):
         img = Image.fromarray(feature.astype(np.uint8))
         label_name = _label_index_map_label_name(label)
-        image_name = "b" + str(batch_i) + "_" + label_name + str(i)
+        image_name = "b" + str(batch_i) + "_" + label_name + "_" + str(i)
         print("Creat batch {} image with label: {} and file name: {}".format(batch_i, label_name, image_name))
 
         label_dir_path = os.path.join(data_folder_path, "train", label_name)
