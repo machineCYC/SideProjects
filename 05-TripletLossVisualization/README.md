@@ -10,37 +10,35 @@
 ## File Stucture
 
 ```
-04-TransferLearning/
+05-TripletLossVisualization/
 |    .gitignore
 |    README.md
-|    main.py
+|    train.py
+|
+└─── experiments/
+|      naive_cnn
+|
 |
 └─── src/
 |      __init__.py
-|      File.py
-|      model.py
-|      common.py
-|      download_data.py
+|      utils.py
 |
-└─── tmp/
-|       bottleneck/
-|       imagenet/
-|       retrain_logs/
+└─── model/
+|      triplet_loss.py
+|      model_fn.py
 |
 |
 └─── data/
-|       train/
-|       train2/
+|       
 |___
 ```
 
 # Reference
 
-* [](https://blog.csdn.net/qq_15192373/article/details/78490726)
+* [Facenet](https://blog.csdn.net/qq_15192373/article/details/78490726)
 
-* [](https://github.com/SpikeKing/triplet-loss-mnist)
-
+* [Triplet Loss Example](https://github.com/SpikeKing/triplet-loss-mnist)
 
 * [](https://github.com/omoindrot/tensorflow-triplet-loss)
 
-* [](https://zhuanlan.zhihu.com/p/33681224)
+* [Tensorflow Estimator](https://zhuanlan.zhihu.com/p/33681224)
