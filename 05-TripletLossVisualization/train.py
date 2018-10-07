@@ -20,7 +20,8 @@ def main(args):
 
     config = tf.estimator.RunConfig(tf_random_seed=230,
                                     model_dir=args.MODEL_DIR_PATH,
-                                    save_summary_steps=params["save_summary_steps"])
+                                    save_summary_steps=params["save_summary_steps"],
+                                    keep_checkpoint_max=params["keep_checkpoint_max"])
     estimator = tf.estimator.Estimator(model_fn=model_fn, params=params, config=config)
 
     tf.logging.info("Loading mnist datasets")
@@ -46,11 +47,11 @@ def main(args):
 
     tf.logging.info("Starting training")
 
-    for e in range(params["num_epochs"]):
-        tf.logging.info("Training on epochs {}.".format(e))
+    for epoch in range(params["num_epochs"]):
+        tf.logging.info("================Training on epochs {}.===================".format(epoch))
         estimator.train(input_fn=train_input_fn)
 
-        tf.logging.info("Validation on epochs {}.".format(e))
+        tf.logging.info("================Validation on epochs {}.=================".format(epoch))
         estimator.evaluate(input_fn=valid_input_fn)
 
 if __name__ == "__main__":

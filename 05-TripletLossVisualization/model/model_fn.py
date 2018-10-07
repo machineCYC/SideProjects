@@ -57,8 +57,12 @@ def model_fn(features, labels, params, mode):
         return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
 
     with tf.name_scope("Loss"):
-        # triplet_loss = batch_hard_triplet_loss(labels, embeddings, params["margin"])
-        triplet_loss, fraction_positive_triplets = batch_all_triplet_loss(labels, embeddings, params["margin"])
+        if params["triplet_strategy"] == "batch_all":
+            triplet_loss, fraction_positive_triplets = batch_all_triplet_loss(labels, embeddings, params["margin"])
+        elif params["triplet_strategy"] == "batch_hard":
+            triplet_loss = batch_hard_triplet_loss(labels, embeddings, params["margin"])
+        else:
+            raise ValueError("Triplet strategy not recognized: {}".format(params["triplet_strategy"]))
         tf.summary.scalar("Triplet_Loss", triplet_loss)
     
     optimizer = tf.train.AdamOptimizer(params["learning_rate"])
