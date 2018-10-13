@@ -62,13 +62,28 @@ def train_input_fn(data_dir_path, params):
     """Train input function for the MNIST dataset.
 
     Args:
-        data_dir: (string) path to the data directory
+        data_dir_path: (string) path to the data directory
         params: (Params) contains hyperparameters of the model (ex: `params.num_epochs`)
     """
-    dataset = train(data_dir_path)
-    dataset = dataset.shuffle(params["train_size"])  # whole dataset into the buffer
-    dataset = dataset.batch(params["batch_size"])
-    dataset = dataset.prefetch(1)  # make sure you always have one batch ready to serve
+    with tf.name_scope("Data_Pipeline"):
+        dataset = train(data_dir_path)
+        dataset = dataset.shuffle(params["train_size"] + params["valid_size"])  # whole dataset into the buffer
+        dataset = dataset.repeat(params["num_epochs"])
+        dataset = dataset.batch(params["batch_size"])
+        dataset = dataset.prefetch(1)  # make sure you always have one batch ready to serve
+
+    # TODO:
+    # train_dataset = dataset.take(params["train_size"])
+    # valid_dataset = dataset.skip(params["train_size"])
+
+    # train_dataset = train_dataset.batch(params["batch_size"])
+    # train_dataset = train_dataset.shuffle(params["train_size"])
+    # train_dataset = train_dataset.prefetch(1)  # make sure you always have one batch ready to serve
+
+    # valid_dataset = valid_dataset.batch(params["batch_size"])
+    # valid_dataset = valid_dataset.shuffle(params["valid_size"])
+    # valid_dataset = valid_dataset.prefetch(1)  # make sure you always have one batch ready to serve
+    # return train_dataset, valid_dataset
     return dataset
 
 
@@ -76,11 +91,10 @@ def test_input_fn(data_dir_path, params):
     """Test input function for the MNIST dataset.
 
     Args:
-        data_dir: (string) path to the data directory
+        data_dir_path: (string) path to the data directory
         params: (Params) contains hyperparameters of the model (ex: `params.num_epochs`)
     """
     dataset = test(data_dir_path)
-    dataset = dataset.shuffle(params["test_size"])
     dataset = dataset.batch(params["batch_size"])
     dataset = dataset.prefetch(1)  # make sure you always have one batch ready to serve
     return dataset
