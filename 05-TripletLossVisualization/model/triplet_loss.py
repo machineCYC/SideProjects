@@ -204,3 +204,11 @@ def batch_all_triplet_loss(labels, embeddings, margin, squared=False):
     triplet_loss = tf.reduce_sum(triplet_loss) / (num_positive_triplets + 1e-16)
 
     return triplet_loss, fraction_positive_triplets
+
+def batch_semi_hard_triplet_loss(labels, embeddings, margin):
+    triplet_loss = tf.contrib.losses.metric_learning.triplet_semihard_loss(
+        labels,
+        embeddings,
+        margin=margin
+    )
+    return triplet_loss
