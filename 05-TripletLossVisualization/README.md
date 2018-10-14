@@ -43,30 +43,30 @@ Triplet loss 概念和說明如下:
 在這次實驗中，主要是透過 cnn 模型將 mnist data 投影至 embedding space，模型如下圖紅框處。
 
 <div class="center">
-    <img src="image/navie_cnn.png" height="300px">
+    <img src="image/navie_cnn.png" height="500px">
 </div>
 
 下列將實驗的結果統整如下
 
 - triplet_strategy: 指的是使用何種方法找出 anchor、positive 和 negative
-- fraction_positive_triplets: 在使用 batch_all 的方法找出 anchor、positive 和 negativ 時，可以去觀察每組 batch data 中 tiplet loss 大於 0 在有效的 triplet 中所佔的比例
+- fraction_positive: 在使用 batch_all 的方法找出 anchor、positive 和 negativ 時，可以去觀察每組 batch data 中 tiplet loss 大於 0 在有效的 triplet 中所佔的比例
 
-| model | margin | triplet_strategy | fraction_positive_triplets(train) | fraction_positive_triplets(valid) | loss(train) | loss(valid) |
+| model | margin | triplet_strategy | fraction_positive(train) | fraction_positive(valid) | loss(train) | loss(valid) |
 | --- | --- | --- | --- |--- |--- |--- |
 | 2018-10-14-100444 | 0.5 | batch_all | 0.0054673 | 0.02537 | 0.09122 | 0.1592 |
 | 2018-10-14-105153 | 1 | batch_all | 0.1446 | 0.1627 | 0.1997 | 0.2367 |
 | 2018-10-14-125311 | 3 | batch_all | 1.0 | 1.0 | 1.730 | 1.713 |
 
 <div class="center">
-    <img src="image/2018-10-14-100444-loss.png" height="350px">
-    <img src="image/2018-10-14-105153-loss.png" height="350px">
-    <img src="image/2018-10-14-125311-loss.png" height="350px">
+    <img src="image/2018-10-14-100444-loss.png" height="400px">
+    <img src="image/2018-10-14-105153-loss.png" height="400px">
+    <img src="image/2018-10-14-125311-loss.png" height="400px">
 </div>
 
 <div class="center">
-    <img src="image/2018-10-14-100444-embedding.png" height="300px">
-    <img src="image/2018-10-14-105153-embedding.png" height="300px">
-    <img src="image/2018-10-14-125311-embedding.png" height="300px">
+    <img src="image/2018-10-14-100444-embedding.png" height="250px">
+    <img src="image/2018-10-14-105153-embedding.png" height="250px">
+    <img src="image/2018-10-14-125311-embedding.png" height="250px">
 </div>
 
 ## Note
