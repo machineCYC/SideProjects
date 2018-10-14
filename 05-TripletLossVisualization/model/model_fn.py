@@ -22,9 +22,9 @@ def modify_structure(images, params):
     with tf.name_scope("conv_block_2"):
         # Convolutional block
         out = _conv_block(input_layer=out, filters=64, kernel_size=3)
-    with tf.name_scope("conv_block_3"):
-        # Convolutional block
-        out = _conv_block(input_layer=out, filters=128, kernel_size=3)
+    # with tf.name_scope("conv_block_3"):
+    #     # Convolutional block
+    #     out = _conv_block(input_layer=out, filters=128, kernel_size=3)
 
     with tf.name_scope("flatten"):
         out = tf.layers.flatten(out)
@@ -57,14 +57,13 @@ def model_fn(features, labels, params, mode):
     if not images.shape[1:] == [params["image_size"], params["image_size"], params["image_channel"]]:
         tf.logging.error("Image shape do not equal to the config setting")
     
-    with tf.name_scope("Embedding_Model"):
-        embeddings = modify_structure(images, params)
+    embeddings = modify_structure(images, params)
     
     if mode == tf.estimator.ModeKeys.PREDICT:
         predictions = {"embeddings": embeddings}
         return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
 
-    with tf.name_scope("Loss"):
+    with tf.name_scope("Triplet_Loss"):
         if params["triplet_strategy"] == "batch_all":
             triplet_loss, fraction_positive_triplets = batch_all_triplet_loss(labels, embeddings, params["margin"])
         elif params["triplet_strategy"] == "batch_hard":
@@ -75,9 +74,10 @@ def model_fn(features, labels, params, mode):
             raise ValueError("Triplet strategy not recognized: {}".format(params["triplet_strategy"]))
     
     # Summaries for training
-    tf.summary.scalar("Triplet_Loss", triplet_loss)
     if params["triplet_strategy"] == "batch_all":
         tf.summary.scalar("fraction_positive_triplets", fraction_positive_triplets)
+        with tf.variable_scope("metrics"):
+            eval_metric_ops = {"fraction_positive_triplets": tf.metrics.mean(fraction_positive_triplets)} # add mean become op
 
     tf.summary.image("train_image", images, max_outputs=10)
 
@@ -90,7 +90,7 @@ def model_fn(features, labels, params, mode):
         return tf.estimator.EstimatorSpec(mode=mode, loss=triplet_loss, train_op=train_op)
 
     if mode == tf.estimator.ModeKeys.EVAL:
-        return tf.estimator.EstimatorSpec(mode=mode, loss=triplet_loss)
+        return tf.estimator.EstimatorSpec(mode=mode, loss=triplet_loss, eval_metric_ops=eval_metric_ops)
 
 
 def _conv_block(input_layer, filters, kernel_size):
