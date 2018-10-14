@@ -38,7 +38,7 @@ Triplet loss 概念和說明如下:
 <a href="https://www.codecogs.com/eqnedit.php?latex=L(a,p,n)&space;=&space;max\left&space;(&space;d(a,&space;p)&space;&plus;&space;\alpha&space;-&space;d(a,&space;n),&space;0&space;\right&space;)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?L(a,p,n)&space;=&space;max\left&space;(&space;d(a,&space;p)&space;&plus;&space;\alpha&space;-&space;d(a,&space;n),&space;0&space;\right&space;)" title="L(a,p,n) = max\left ( d(a, p) + \alpha - d(a, n), 0 \right )" /></a>
 
 
-在 anchor、positive 和 negative 的選擇上有很多種方法。主要可分為 offine triplet mining 和 online triplet mining。而 offine triplet mining 的方法訓練和選擇 anchor、positive、negative 是拆開的，所以相對沒效率。online triplet mining 則是在每個 batch data 中進行選擇。細節可以參考 reference 的文章。在這次實驗中都是以 online 為主。
+在 anchor、positive 和 negative 的選擇上有很多種方法。主要可分為 offine triplet mining 和 online triplet mining。而 offine triplet mining 的方法在訓練和選擇 anchor、positive、negative 是拆開的，所以相對沒效率。online triplet mining 則是在每個 batch data 中進行選擇。細節可以參考 reference 的文章。在這次實驗中都是以 online 為主。
 
 在這次實驗中，主要是透過 cnn 模型將 mnist data 投影至 embedding space，模型如下圖紅框處。
 
@@ -57,17 +57,25 @@ Triplet loss 概念和說明如下:
 | 2018-10-14-105153 | 1 | batch_all | 0.1446 | 0.1627 | 0.1997 | 0.2367 |
 | 2018-10-14-125311 | 3 | batch_all | 1.0 | 1.0 | 1.730 | 1.713 |
 
+下圖由左到右分別為 model 2018-10-14-100444、2018-10-14-105153、2018-10-14-125311
 <div class="center">
-    <img src="image/2018-10-14-100444-loss.png" height="400px">
-    <img src="image/2018-10-14-105153-loss.png" height="400px">
-    <img src="image/2018-10-14-125311-loss.png" height="400px">
+    <img src="image/2018-10-14-100444-loss.png" height="450px">
+    <img src="image/2018-10-14-105153-loss.png" height="450px">
+    <img src="image/2018-10-14-125311-loss.png" height="450px">
 </div>
 
+下圖由上到下分別為 model 2018-10-14-100444、2018-10-14-105153、2018-10-14-125311
 <div class="center">
-    <img src="image/2018-10-14-100444-embedding.png" height="250px">
-    <img src="image/2018-10-14-105153-embedding.png" height="250px">
-    <img src="image/2018-10-14-125311-embedding.png" height="250px">
+    <img src="image/2018-10-14-100444-embedding.png" height="400px">
+    <img src="image/2018-10-14-105153-embedding.png" height="400px">
+    <img src="image/2018-10-14-125311-embedding.png" height="400px">
 </div>
+
+當 margin 越來越大時由 fraction_positive_triplets 圖來看，每個 batch data 擁有越多 loss 大於 0 的 triplets。由 fraction_positive_triplets 第三張圖可以知道，training 的過程中模型似乎無法達到 margin的要求，因為 loss > 0 的 triplet 始終不減。
+
+而 loss 則是越來越穩定，推測原因可能是因為透過這簡單的 cnn 所創造出來的 embedding 無法讓不同類別間的距離達到 margin 的要求，進而去影響 loss 的表現。從 embedding 視覺化的圖發現 margin 越大效果越差，也意味著 margin 越大對整體而言不一定比較好。
+
+Triplet loss 之所以難 train 主要是因為，它不單單只是要求 loss 越低越好，而是希望將不同類別的資料盡可能地分開。在訓練過程中主要參考的 loss plot 變得比較不重要。再利用 batch_all 這種方式來選擇 anchor、positive 和 negative 時，可以透過 batch data 中 loss > 0 的資料比例來幫助衡量模型訓練的狀況。
 
 ## Note
 
