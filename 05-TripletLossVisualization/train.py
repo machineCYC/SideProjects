@@ -1,15 +1,16 @@
 import os
+import time
 import argparse
 import tensorflow as tf
 import numpy as np
-from tensorflow.examples.tutorials.mnist import input_data
 
 from src.utils import get_params
+from src.load_data import train_input_fn
+from src.load_data import test_input_fn
 from model.model_fn import model_fn
 
 
 def main(args):
-
     tf.logging.set_verbosity(tf.logging.INFO)
 
     json_path = os.path.join(args.MODEL_DIR_PATH, "params.json")
@@ -18,41 +19,23 @@ def main(args):
     
     params = get_params(json_path)
 
+    time_now = time.strftime("%Y-%m-%d-%H%M%S")
+    chpt_dir_path = os.path.join(args.MODEL_DIR_PATH, time_now)
+    if not os.path.exists(chpt_dir_path):
+        os.makedirs(chpt_dir_path)
+
+    session_config = tf.ConfigProto(log_device_placement=False)
     config = tf.estimator.RunConfig(tf_random_seed=230,
-                                    model_dir=args.MODEL_DIR_PATH,
-                                    save_summary_steps=params["save_summary_steps"],
-                                    keep_checkpoint_max=params["keep_checkpoint_max"])
+                                    model_dir=chpt_dir_path,
+                                    save_checkpoints_steps=params["save_checkpoints_steps"],
+                                    keep_checkpoint_max=params["keep_checkpoint_max"],
+                                    session_config=session_config)
     estimator = tf.estimator.Estimator(model_fn=model_fn, params=params, config=config)
 
-    tf.logging.info("Loading mnist datasets")
-    mnist = input_data.read_data_sets(args.DATA_DIR_PATH, one_hot=False)
-    
-    train_img = mnist.train.images.reshape([-1, 28, 28, 1]) # (55000, 28, 28, 1)
-    train_label = np.asarray(mnist.train.labels, dtype=np.int32)
-
-    valid_img = mnist.validation.images.reshape([-1, 28, 28, 1]) # (5000, 28, 28, 1)
-    valid_label = np.asarray(mnist.validation.labels, dtype=np.int32)
-
-    train_input_fn = tf.estimator.inputs.numpy_input_fn(x={"x": train_img},
-                                                        y=train_label,
-                                                        batch_size=64,
-                                                        num_epochs=1,
-                                                        shuffle=True)
-    
-    valid_input_fn = tf.estimator.inputs.numpy_input_fn(x={"x": valid_img},
-                                                        y=valid_label,
-                                                        batch_size=64,
-                                                        num_epochs=1,
-                                                        shuffle=False)
-
     tf.logging.info("Starting training")
-
-    for epoch in range(params["num_epochs"]):
-        tf.logging.info("================Training on epochs {}.===================".format(epoch))
-        estimator.train(input_fn=train_input_fn)
-
-        tf.logging.info("================Validation on epochs {}.=================".format(epoch))
-        estimator.evaluate(input_fn=valid_input_fn)
+    train_spec = tf.estimator.TrainSpec(input_fn=lambda: train_input_fn(args.DATA_DIR_PATH, params))
+    eval_spec = tf.estimator.EvalSpec(input_fn=lambda: test_input_fn(args.DATA_DIR_PATH, params), throttle_secs=10)
+    tf.estimator.train_and_evaluate(estimator, train_spec, eval_spec)
 
 if __name__ == "__main__":
     PROJECT_DIR_PATH = os.path.dirname(__file__)
