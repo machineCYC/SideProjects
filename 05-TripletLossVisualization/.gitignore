@@ -1,0 +1,12 @@
+__pycache__/
+naive_cnn/
+*.csv
+*.jpg
+*.png
+*.h5
+*.ASUS
+*.vscode/
+*.zip
+*.gz
+*.txt
+
