@@ -71,19 +71,6 @@ def train_input_fn(data_dir_path, params):
         dataset = dataset.repeat(params["num_epochs"])
         dataset = dataset.batch(params["batch_size"])
         dataset = dataset.prefetch(1)  # make sure you always have one batch ready to serve
-
-    # TODO:
-    # train_dataset = dataset.take(params["train_size"])
-    # valid_dataset = dataset.skip(params["train_size"])
-
-    # train_dataset = train_dataset.batch(params["batch_size"])
-    # train_dataset = train_dataset.shuffle(params["train_size"])
-    # train_dataset = train_dataset.prefetch(1)  # make sure you always have one batch ready to serve
-
-    # valid_dataset = valid_dataset.batch(params["batch_size"])
-    # valid_dataset = valid_dataset.shuffle(params["valid_size"])
-    # valid_dataset = valid_dataset.prefetch(1)  # make sure you always have one batch ready to serve
-    # return train_dataset, valid_dataset
     return dataset
 
 
