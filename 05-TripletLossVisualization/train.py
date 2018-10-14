@@ -13,17 +13,25 @@ from model.model_fn import model_fn
 def main(args):
     tf.logging.set_verbosity(tf.logging.INFO)
 
+    # confirm model dir path is exists
+    if not os.path.exists(args.MODEL_DIR_PATH):
+        os.makedirs(args.MODEL_DIR_PATH)
+
+    # confirm jason file is exists
     json_path = os.path.join(args.MODEL_DIR_PATH, "params.json")
     if not json_path:
         tf.logging.error("No json configuration file found at {}".format(json_path))
     
+    # get training parameters
     params = get_params(json_path)
 
+    # confirm training model saving place exists
     time_now = time.strftime("%Y-%m-%d-%H%M%S")
     chpt_dir_path = os.path.join(args.MODEL_DIR_PATH, time_now)
     if not os.path.exists(chpt_dir_path):
         os.makedirs(chpt_dir_path)
 
+    # estmator config setting and create estimator
     session_config = tf.ConfigProto(log_device_placement=False)
     config = tf.estimator.RunConfig(tf_random_seed=230,
                                     model_dir=chpt_dir_path,
@@ -32,6 +40,7 @@ def main(args):
                                     session_config=session_config)
     estimator = tf.estimator.Estimator(model_fn=model_fn, params=params, config=config)
 
+    # training and validation
     tf.logging.info("Starting training")
     train_spec = tf.estimator.TrainSpec(input_fn=lambda: train_input_fn(args.DATA_DIR_PATH, params))
     eval_spec = tf.estimator.EvalSpec(input_fn=lambda: test_input_fn(args.DATA_DIR_PATH, params), throttle_secs=10)

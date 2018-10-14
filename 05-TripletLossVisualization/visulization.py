@@ -14,7 +14,7 @@ from src.load_data import test_input_fn
 def main(args):
     tf.logging.set_verbosity(tf.logging.INFO)
     
-    embedding_dir_path = os.path.join(args.MODEL_DIR_PATH, "embedding")
+    embedding_dir_path = args.MODEL_CHPT_DIR_PATH + "-embedding"
     if not os.path.exists(embedding_dir_path):
         os.makedirs(embedding_dir_path)
 
@@ -24,11 +24,11 @@ def main(args):
     
     params = get_params(json_path)
     
-    config = tf.estimator.RunConfig(tf_random_seed=230,
+    train_config = tf.estimator.RunConfig(tf_random_seed=230,
                                     model_dir=args.MODEL_CHPT_DIR_PATH,
                                     save_summary_steps=params["save_summary_steps"])
 
-    estimator = tf.estimator.Estimator(model_fn, params=params, config=config)
+    estimator = tf.estimator.Estimator(model_fn, params=params, config=train_config)
 
     #### prepare sprite.png and metadata.tsv
     sprite_image_path = os.path.join(embedding_dir_path, "sprite.png")
@@ -50,17 +50,17 @@ def main(args):
     embedding_var = tf.Variable(embeddings, name="mnist_embedding")
     summary_writer = tf.summary.FileWriter(embedding_dir_path)
 
-    config1 = projector.ProjectorConfig()
-    embedding = config1.embeddings.add()
+    embedding_config = projector.ProjectorConfig()
+    embedding = embedding_config.embeddings.add()
     embedding.tensor_name = embedding_var.name
 
     # Specify where you find the metadata
     embedding.metadata_path = "metadata.tsv" #'metadata.tsv'
     # Specify where you find the sprite (we will create this later)
     embedding.sprite.image_path = "sprite.png"
-    embedding.sprite.single_image_dim.extend([28, 28])
+    embedding.sprite.single_image_dim.extend([params["image_size"], params["image_size"]])
     # Say that you want to visualise the embeddings
-    projector.visualize_embeddings(summary_writer, config1)
+    projector.visualize_embeddings(summary_writer, embedding_config)
 
     saver = tf.train.Saver()
     with tf.Session() as sess:
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     PROJECT_DIR_PATH = os.path.dirname(__file__)
     DATA_DIR_PATH = os.path.join(PROJECT_DIR_PATH, "data/MNIST_data")
     MODEL_DIR_PATH = os.path.join(PROJECT_DIR_PATH, "experiments/naive_cnn")
-    MODEL_CHPT_DIR_PATH = os.path.join(MODEL_DIR_PATH, "2018-10-12-002416")
+    MODEL_CHPT_DIR_PATH = os.path.join(MODEL_DIR_PATH, "2018-10-14-100444")
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
