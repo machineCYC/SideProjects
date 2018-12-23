@@ -13,3 +13,5 @@ The detail of each conception is in the below.
 [04-TransferLearning](https://github.com/machineCYC/SideProjects/tree/master/04-TransferLearning)
 
 [05-TripletLossVisualization](https://github.com/machineCYC/SideProjects/tree/master/05-TripletLossVisualization)
+
+[06-Kaggle-HousePricesAdvancedRegTech](https://github.com/machineCYC/SideProjects/tree/master/06-Kaggle-HousePricesAdvancedRegTech)
