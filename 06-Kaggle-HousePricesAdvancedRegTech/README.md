@@ -2,7 +2,14 @@
 
 ## Purpose: House Prices Predict
 
+每一間房子透過 79 個特正來描述，希望透過這些特徵來對房子做定價
+
 ## Data 簡介
+
+- train.csv: 訓練資料，包含 1460 筆資料, 81 個欄位
+- test.csv - 測試資料，包含 1459 筆資料, 80 個欄位
+- data_description.txt: 完整的資料描述，包含每個欄位說明。
+- sample_submission.csv: 一個 submit 的標準格式，包含資料 id 和銷售金額
 
 ## Summary
 
@@ -15,6 +22,24 @@
 註1:是透過 log(1+x) 轉換所計算出來的 score
 
 註2:透過 exp(predict) - 1 轉換所計算出來的 score
+
+## File Stucture
+
+```
+06-Kaggle-HousePricesAdvancedRegTech
+|    README.md
+|    main.ipynb
+|    eda.ipynb
+|    requirements-to-freeze.txt
+|
+└─── data
+|      train.csv
+|      test.csv
+|      sample_submission.csv
+|      data_description.txt
+|      submission.csv
+|___
+```
 
 ## Reference
 
