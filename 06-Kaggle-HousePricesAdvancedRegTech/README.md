@@ -13,21 +13,29 @@
 
 ## Summary
 
-| Entries | train score(註1) | ranking | total team | submit score(註2) |
+| Entries | train cv rmse | train rmse(註1) | ranking | total team | submit score(註2) |
 | --- | --- | --- | --- |--- |
-| 1 | NA | 4438 | 4691 | 0.40890 |
-| 2 | 0.08155 | 1161 | 4753 | 0.12210 |
-| 3 | 0.07636 | 978 | 4753 | 0.12042 |
-| 4 | 0.07572 | 973 | 4757 | 0.12039 |
+| 1 | NA | NA | 4438 | 4691 | 0.40890 |
+| 2 | NA | 0.08155 | 1161 | 4753 | 0.12210 |
+| 3 | NA | 0.07636 | 978 | 4753 | 0.12042 |
+| 4 | NA | 0.07572 | 973 | 4757 | 0.12039 |
+| 4 | 0.1075 | 0.07599 | 424 | 4587 | 0.11564 |
 
 註1:是透過 log(1+x) 轉換所計算出來的 score
 
 註2:透過 exp(predict) - 1 轉換所計算出來的 score
 
 1. 如果只針對 SalePrice 做 log-transform，不針對其他數值變數做 transform 結果會很差
-2. 對 SalePrice 做 log-transform 和數值變數做 box-cox transform，最後利用 avg model，結果為 Entries2
+2. 對 SalePrice 做 log-transform 和數值變數做 box-cox transform，最後利用 avg model，lambda=0.15，結果為 Entries2
 3. 對 SalePrice 做 log-transform 和數值變數做 box-cox transform，最後利用 stacking model，lambda=0.15，結果為 Entries3
 4. 對 SalePrice 做 log-transform 和數值變數做 box-cox transform，最後利用 stacking model，lambda=0.3，結果為 Entries4
+5. 對 SalePrice 做 log-transform 和數值變數做 box-cox transform，最後利用 stacking model，lambda=-2,2 optim，結果為 Entries5
+
+## Note
+
+1. Log-Transform、SquareRoot-Transform: Skew must be positive
+2. Exponential-Transforma: Skew must be negative
+
 
 ## File Stucture
 
