@@ -2,14 +2,19 @@
 
 ## Purpose: House Prices Predict
 
-每一間房子透過 79 個特正來描述，希望透過這些特徵來對房子做定價
+The goal is to predict the sales price for each house. Each house has 79 features to describe the building.
+
+For each house Id in the test set, you must predict the value of the SalePrice variable.
+
+Submissions are evaluated on [Root-Mean-Squared-Error (RMSE)](https://en.wikipedia.org/wiki/Root-mean-square_deviation)
+between the logarithm of the predicted value and the logarithm of the observed sales price. (Taking logs means that errors in predicting expensive houses and cheap houses will affect the result equally.)
 
 ## Data 簡介
 
-- train.csv: 訓練資料，包含 1460 筆資料, 81 個欄位
-- test.csv - 測試資料，包含 1459 筆資料, 80 個欄位
-- data_description.txt: 完整的資料描述，包含每個欄位說明。
-- sample_submission.csv: 一個 submit 的標準格式，包含資料 id 和銷售金額
+- train.csv: Training data, including 1460 datas, 81 features
+- test.csv - Testing data, including 1459 data, 80 features
+- data_description.txt: Describe the detail for each house, including features introduction.
+- sample_submission.csv: A standard submission file format, including house id and SalePrice.
 
 ## Summary
 

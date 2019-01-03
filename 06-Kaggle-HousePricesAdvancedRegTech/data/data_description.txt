@@ -374,7 +374,7 @@ FullBath: Full bathrooms above grade
 
 HalfBath: Half baths above grade
 
-Bedroom: Bedrooms above grade (does NOT include basement bedrooms)
+Bedroom: Bedrooms above grade (does NOT include basement bedrooms). Number of bedrooms above basement level
 
 Kitchen: Kitchens above grade
 
